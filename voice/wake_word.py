@@ -1,7 +1,13 @@
+import os
+os.environ["VOSK_LOG_LEVEL"] = "0"
+
+
 import queue
 import sounddevice as sd
 from vosk import Model, KaldiRecognizer
 from core.config import load_config
+
+
 
 class WakeWordListener:
     def __init__(self):
@@ -11,7 +17,8 @@ class WakeWordListener:
         wake_word = cfg["assistant"]["wake_word"]
 
         self.model = Model(model_path)
-        grammar = f'["{wake_word}"]'
+        grammar = '["hey daemon"]'
+
         self.rec = KaldiRecognizer(self.model, self.sample_rate, grammar)
 
         self.q = queue.Queue()

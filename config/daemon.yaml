@@ -2,32 +2,34 @@ assistant:
   name: Daemon
   wake_word: "hey daemon"
   response_ack: "Yes?"
+  system_prompt: "You are Daemon, a helpful AI assistant. Respond concisely and directly. Always refer to the user as 'sir' or 'madam'."
 
 audio:
   sample_rate: 16000
   channels: 1
-  input_device: null   # null = default
-  output_device: null  # null = default
+  input_device: 1
 
 stt:
   engine: vosk
   vosk_model_path: models/vosk-model-small-en-us-0.15
-
+  max_seconds: 8
 
 tts:
   engine: piper
+  voice: default
+  rate: 170
   piper_model: models/piper/en_US-lessac-medium.onnx
-
 
 ollama:
   host: http://localhost:11434
   model: llama3.2:3b-instruct-q4_0
-  timeout: 30
+  timeout: 90
   max_tokens: 512
+
 
 memory:
   max_turns: 6
-  persist: false   # session-only (no disk writes)
+  persist: false
 
 security:
   confirm_destructive: true
@@ -40,4 +42,4 @@ security:
 
 logging:
   level: WARNING
-  to_file: false    # HDD-safe
+  to_file: false
