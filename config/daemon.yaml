@@ -7,7 +7,7 @@ assistant:
 audio:
   sample_rate: 16000
   channels: 1
-  input_device: 1
+  input_device: 8
 
 stt:
   engine: vosk

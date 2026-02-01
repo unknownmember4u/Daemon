@@ -23,7 +23,7 @@ system_info:
 
 hyprland:
   workspace:
-    pattern: "(?:switch to|go to) ?(?:workspace)? ?(?P<n>\d+)"
+    pattern: "(?:switch to|go to) ?(?:workspace)? ?(?P<n>\\d+)"
     action: "switch_workspace"
   close_window:
     pattern: "(?:close|kill) ?(?:the)? ?active window"
@@ -37,9 +37,9 @@ hyprland:
 
 files:
   create_file:
-    pattern: "create ?(?:a)? ?file named ?(?P<path>[a-zA-Z0-9_\-./]+)(?: with content (?P<content>.*))?"
+    pattern: "create ?(?:a)? ?file named ?(?P<path>[a-zA-Z0-9_\\-./]+)(?: with content (?P<content>.*))?"
     action: "create_file"
   delete_file:
-    pattern: "delete ?(?:the)? ?file named ?(?P<path>[a-zA-Z0-9_\-./]+)"
+    pattern: "delete ?(?:the)? ?file named ?(?P<path>[a-zA-Z0-9_\\-./]+)"
     action: "delete_file"
 
