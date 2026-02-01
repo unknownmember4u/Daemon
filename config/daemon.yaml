@@ -1,0 +1,43 @@
+assistant:
+  name: Daemon
+  wake_word: "hey daemon"
+  response_ack: "Yes?"
+
+audio:
+  sample_rate: 16000
+  channels: 1
+  input_device: null   # null = default
+  output_device: null  # null = default
+
+stt:
+  engine: vosk
+  vosk_model_path: models/vosk-model-small-en-us-0.15
+
+
+tts:
+  engine: piper
+  piper_model: models/piper/en_US-lessac-medium.onnx
+
+
+ollama:
+  host: http://localhost:11434
+  model: llama3.2:3b-instruct-q4_0
+  timeout: 30
+  max_tokens: 512
+
+memory:
+  max_turns: 6
+  persist: false   # session-only (no disk writes)
+
+security:
+  confirm_destructive: true
+  blocked_commands:
+    - rm
+    - shutdown
+    - reboot
+    - mkfs
+    - dd
+
+logging:
+  level: WARNING
+  to_file: false    # HDD-safe

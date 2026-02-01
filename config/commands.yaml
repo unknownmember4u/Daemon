@@ -1,0 +1,17 @@
+open_apps:
+  firefox: firefox
+  terminal: foot
+  file_manager: thunar
+
+system_info:
+  cpu: "psutil.cpu_percent(interval=1)"
+  memory: "psutil.virtual_memory()"
+
+hyprland:
+  workspace:
+    pattern: "workspace {n}"
+  close_window: "killactive"
+
+paths:
+  home: "~"
+  downloads: "~/Downloads"
