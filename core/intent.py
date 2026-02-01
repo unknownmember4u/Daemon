@@ -21,7 +21,6 @@ class IntentRecognizer:
 
                 # Ensure command_config is a dictionary
                 if not isinstance(command_config, dict):
-                    print(f"Warning: Command '{command_name}' under group '{intent_group}' has an invalid configuration. Skipping.")
                     continue
 
                 pattern = command_config.get("pattern")
@@ -29,12 +28,11 @@ class IntentRecognizer:
                 args = command_config.get("args", {})
 
                 if not pattern or not action:
-                    print(f"Warning: Command '{command_name}' under group '{intent_group}' is missing 'pattern' or 'action'. Skipping.")
                     continue
 
                 commands[intent_key] = {
                     "pattern": re.compile(pattern, re.IGNORECASE),
-                    "action": action,
+                    "action": f"{intent_group.split('_')[0]}_{action}",
                     "args": args,
                 }
         return commands
@@ -49,9 +47,3 @@ class IntentRecognizer:
                 final_args = {**command_data["args"], **extracted_args}
                 return intent_key, {"action": command_data["action"], "args": final_args}
         return "llm", {}
-
-# Global instance for easy access
-intent_recognizer = IntentRecognizer()
-
-def detect_intent(text: str) -> tuple[str, dict]:
-    return intent_recognizer.detect_intent(text)

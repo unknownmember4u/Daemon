@@ -4,7 +4,7 @@ import importlib
 import os
 
 from core.config import load_config
-from core.intent import detect_intent
+from core.intent import IntentRecognizer
 from core.memory import SessionMemory
 
 from voice.wake_word import WakeWordListener
@@ -26,6 +26,7 @@ class DaemonAssistant:
         self.tts = PiperTTS()
         self.llm = OllamaClient()
         self.memory = SessionMemory()
+        self.intent_recognizer = IntentRecognizer()
 
         # Assistant identity
         self.name = self.cfg["assistant"]["name"]
@@ -61,7 +62,7 @@ class DaemonAssistant:
         self.memory.add_assistant(text)
 
     def handle_intent(self, text: str) -> str:
-        intent_key, action_data = detect_intent(text)
+        intent_key, action_data = self.intent_recognizer.detect_intent(text)
 
         if intent_key == "llm":
             self.memory.add_user(text)
@@ -74,15 +75,7 @@ class DaemonAssistant:
             # This requires a change in OllamaClient.generate to accept messages
             return self.llm.generate(messages)
         
-        # Split intent_key to get module and function name
-        # e.g., "system_cpu_usage" -> ("system", "cpu_usage")
-        parts = intent_key.split('_', 1) # Split only on the first underscore
-        if len(parts) < 2:
-            print(f"DEBUG: Invalid intent_key format: {intent_key}")
-            return "I'm not sure how to handle that command."
-
-        module_name, func_name = parts[0], parts[1]
-        action_func_key = f"{module_name}_{func_name}"
+        action_func_key = action_data["action"]
 
         action_func = self.actions.get(action_func_key)
 
@@ -103,19 +96,32 @@ class DaemonAssistant:
                         filtered_args[param_name] = first_arg_value
 
 
-                result = action_func(**filtered_args)
+                # Attempt type conversion for arguments
+                converted_args = {}
+                for param_name, param_value in filtered_args.items():
+                    param_type = sig.parameters[param_name].annotation
+                    try:
+                        if param_type is int:
+                            converted_args[param_name] = int(param_value)
+                        elif param_type is float:
+                            converted_args[param_name] = float(param_value)
+                        else:
+                            converted_args[param_name] = param_value
+                    except (ValueError, TypeError):
+                        return f"Invalid type for argument '{param_name}'. Expected {param_type.__name__}."
+                                
+                result = action_func(**converted_args)
                 return str(result)
             except Exception as e:
-                print(f"Error executing action {action_func_key}: {e}")
                 return f"I encountered an error while trying to {func_name}."
         else:
-            print(f"DEBUG: Action function not found for intent_key: {intent_key}")
             return "I don't know how to perform that action yet."
 
     def run(self):
         print(f"{self.name} is running. Say 'hey daemon' to begin.")
         
         while True:
+            print("DEBUG: Waiting for wake word...")
             # ===== IDLE: wait for wake word =====
             self.wake.wait()
             

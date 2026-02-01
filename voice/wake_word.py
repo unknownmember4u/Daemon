@@ -27,8 +27,10 @@ class WakeWordListener:
         if status:
             return
         self.q.put(bytes(indata))
+        print(f"DEBUG: WakeWordListener received audio data, size: {len(indata)}") # Debugging: Confirm audio data is received
 
     def wait(self):
+        print("DEBUG: WakeWordListener is waiting for wake word...")
         with sd.RawInputStream(
             samplerate=self.sample_rate,
             blocksize=8000,

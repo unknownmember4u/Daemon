@@ -21,12 +21,6 @@ class SpeechToText:
         self.model = Model(cfg["stt"]["vosk_model_path"])
         self.device = cfg["audio"].get("input_device")
 
-        # --- Debugging Audio Devices ---
-        print("\n--- Sounddevice Audio Devices ---")
-        print(sd.query_devices())
-        print("-----------------------------------\n")
-        # --- End Debugging Audio Devices ---
-
         self.q = queue.Queue()
 
     def _callback(self, indata, frames, time_info, status):
@@ -34,8 +28,6 @@ class SpeechToText:
             return
         # IMPORTANT: convert to bytes explicitly
         self.q.put(bytes(indata))
-        # Debugging: Confirm data is put into queue
-        # print(f"DEBUG: Audio data added to queue, size: {len(indata)}")
 
     def listen_once(self) -> str:
         rec = KaldiRecognizer(self.model, self.sample_rate)
@@ -53,17 +45,10 @@ class SpeechToText:
                 if time.time() - start > self.max_seconds:
                     # fallback to partial result
                     partial = json.loads(rec.PartialResult()).get("partial", "")
-                    print(f"DEBUG: Partial result (timeout): {partial}")
                     return partial.strip()
 
                 data = self.q.get()
-                # Debugging: Show raw audio data size
-                # print(f"DEBUG: Got audio data from queue, size: {len(data)}")
 
                 if rec.AcceptWaveform(data):
                     result = json.loads(rec.Result())
-                    print(f"DEBUG: Final result: {result.get("text", "")}")
                     return result.get("text", "").strip()
-                else:
-                    partial = json.loads(rec.PartialResult()).get("partial", "")
-                    print(f"DEBUG: Partial result (processing): {partial}")
