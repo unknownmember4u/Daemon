@@ -2,7 +2,7 @@
 
 A system-level daemon developed in Python for extensive **background task scheduling** and **system monitoring** overhead.
 
-![Daemon Dashboard](https://user-images.githubusercontent.com/unknownmember4u/Daemon/daemon-dashboard.png)
+<img width="1536" height="1024" alt="Daemon" src="https://github.com/user-attachments/assets/183dcf3d-d946-4f98-b5ef-d57cf937f8ab" />
 
 ## Overview
 
