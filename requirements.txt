@@ -3,3 +3,5 @@ requests
 vosk
 numpy
 psutil
+google-genai
+sounddevice

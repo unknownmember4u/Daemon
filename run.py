@@ -10,7 +10,7 @@ from core.memory import SessionMemory
 from voice.wake_word import WakeWordListener
 from voice.stt_vosk import SpeechToText
 
-from ai.ollama_client import OllamaClient
+from ai.gemini_client import GeminiClient
 
 # TTS (piper)
 from voice.tts_piper import PiperTTS
@@ -24,7 +24,7 @@ class DaemonAssistant:
         self.wake = WakeWordListener()
         self.stt = SpeechToText()
         self.tts = PiperTTS()
-        self.llm = OllamaClient()
+        self.llm = GeminiClient()
         self.memory = SessionMemory()
         self.intent_recognizer = IntentRecognizer()
 
@@ -71,8 +71,8 @@ class DaemonAssistant:
             messages.extend(list(self.memory.buffer)) # Add conversational memory
             messages.append({"role": "user", "content": text})
 
-            # Instead of a single prompt string, pass a list of messages to OllamaClient
-            # This requires a change in OllamaClient.generate to accept messages
+            # Instead of a single prompt string, pass a list of messages to GeminiClient
+            # This requires a change in GeminiClient.generate to accept messages
             return self.llm.generate(messages)
         
         action_func_key = action_data["action"]

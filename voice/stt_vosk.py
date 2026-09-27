@@ -30,6 +30,12 @@ class SpeechToText:
         self.q.put(bytes(indata))
 
     def listen_once(self) -> str:
+        while not self.q.empty():
+            try:
+                self.q.get_nowait()
+            except queue.Empty:
+                break
+
         rec = KaldiRecognizer(self.model, self.sample_rate)
         start = time.time()
 
@@ -51,4 +57,7 @@ class SpeechToText:
 
                 if rec.AcceptWaveform(data):
                     result = json.loads(rec.Result())
-                    return result.get("text", "").strip()
+                    text = result.get("text", "").strip()
+                    if text:
+                        print(f"DEBUG: STT recognized: '{text}'")
+                    return text
