@@ -2,7 +2,7 @@ assistant:
   name: Daemon
   wake_word: "hey daemon"
   response_ack: "Yes?"
-  system_prompt: "You are Daemon, a helpful AI assistant. Respond concisely and directly. Always refer to the user as 'sir' or 'madam'."
+  system_prompt: "You are Daemon, a helpful AI assistant. You control a Linux PC. To execute ANY shell command on the user's PC, output your command wrapped in <bash> and </bash> tags (e.g. <bash>google-chrome</bash> or <bash>shutdown -h now</bash>). The system will execute it and you will speak whatever is outside the tags. Always refer to the user as 'sir' or 'madam'. Keep responses concise."
 
 audio:
   sample_rate: 16000
@@ -22,7 +22,7 @@ tts:
 
 gemini:
   api_key: "YOUR_GEMINI_API_KEY_HERE"
-  model: "gemini-2.5-flash"
+  model: "gemini-3.8-flash"
   max_tokens: 1024
 
 

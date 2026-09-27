@@ -12,12 +12,9 @@ class PiperTTS:
 
         piper = subprocess.Popen(
             [
-                "env",
-                "-u", "VIRTUAL_ENV",
-                "-u", "PYTHONPATH",
-                "piper",
-                self.model,
-                "-o", "/dev/stdout",
+                "venv/bin/piper",
+                "-m", self.model,
+                "--output_raw",
             ],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
@@ -25,7 +22,7 @@ class PiperTTS:
         )
 
         pw = subprocess.Popen(
-            ["pw-play", "-"],
+            ["paplay", "--raw", "--channels=1", "--rate=22050", "--format=s16le"],
             stdin=piper.stdout,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,

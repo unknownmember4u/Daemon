@@ -2,44 +2,44 @@
 open_apps:
   firefox:
     pattern: "(?:open|launch) ?(?:the|a)? ?firefox"
-    action: "open_app"
+    action: "system_open_app"
     args: {"command": "firefox"}
   terminal:
     pattern: "(?:open|launch) ?(?:the|a)? ?terminal"
-    action: "open_app"
+    action: "system_open_app"
     args: {"command": "foot"}
   file_manager:
     pattern: "(?:open|launch) ?(?:the|a)? ?file manager"
-    action: "open_app"
+    action: "system_open_app"
     args: {"command": "thunar"}
 
 system_info:
   cpu:
     pattern: "(?:what is|show me) ?(?:the)? ?cpu usage"
-    action: "cpu_usage"
+    action: "system_cpu_usage"
   memory:
     pattern: "(?:what is|show me) ?(?:the)? ?memory usage"
-    action: "memory_usage"
+    action: "system_memory_usage"
 
 hyprland:
   workspace:
     pattern: "(?:switch to|go to) ?(?:workspace)? ?(?P<n>\\d+)"
-    action: "switch_workspace"
+    action: "hyprland_switch_workspace"
   close_window:
     pattern: "(?:close|kill) ?(?:the)? ?active window"
-    action: "close_active_window"
+    action: "hyprland_close_active_window"
   focus_next:
     pattern: "(?:focus|go to) ?(?:the)? ?next window"
-    action: "focus_next"
+    action: "hyprland_focus_next"
   focus_prev:
     pattern: "(?:focus|go to) ?(?:the)? ?previous window"
-    action: "focus_prev"
+    action: "hyprland_focus_prev"
 
 files:
   create_file:
     pattern: "create ?(?:a)? ?file named ?(?P<path>[a-zA-Z0-9_\\-./]+)(?: with content (?P<content>.*))?"
-    action: "create_file"
+    action: "files_create_file"
   delete_file:
     pattern: "delete ?(?:the)? ?file named ?(?P<path>[a-zA-Z0-9_\\-./]+)"
-    action: "delete_file"
+    action: "files_delete_file"
 

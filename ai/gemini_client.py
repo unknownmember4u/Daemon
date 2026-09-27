@@ -22,7 +22,7 @@ class GeminiClient:
 
     def generate(self, messages: list[dict]) -> str:
         if not self.client:
-            return "[Gemini error: API key not configured. Please add it to config/daemon.yaml]"
+            return "Gemini error: API key not configured. Please add it to config slash daemon dot yaml"
         
         try:
             system_instruction = None
@@ -48,4 +48,4 @@ class GeminiClient:
             )
             return response.text
         except Exception as e:
-            return f"[Gemini error: {e}]"
+            return f"Gemini error: {e}"

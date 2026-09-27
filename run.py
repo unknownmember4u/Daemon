@@ -65,15 +65,26 @@ class DaemonAssistant:
         intent_key, action_data = self.intent_recognizer.detect_intent(text)
 
         if intent_key == "llm":
+            # Add user message to memory
             self.memory.add_user(text)
+            
             # Construct messages in a structured format for the LLM
             messages = [{"role": "system", "content": self.system_prompt}]
-            messages.extend(list(self.memory.buffer)) # Add conversational memory
-            messages.append({"role": "user", "content": text})
+            messages.extend(list(self.memory.buffer))
 
-            # Instead of a single prompt string, pass a list of messages to GeminiClient
-            # This requires a change in GeminiClient.generate to accept messages
-            return self.llm.generate(messages)
+            # Get response from Gemini
+            response_text = self.llm.generate(messages)
+            
+            # Autonomously execute any bash commands the LLM wants to run
+            import re, subprocess
+            bash_commands = re.findall(r"<bash>(.*?)</bash>", response_text, re.DOTALL)
+            for cmd in bash_commands:
+                print(f"DEBUG: Autonomously executing -> {cmd.strip()}")
+                subprocess.Popen(cmd.strip(), shell=True)
+            
+            # Strip the tags so they aren't spoken by TTS
+            clean_text = re.sub(r"<bash>.*?</bash>", "", response_text, flags=re.DOTALL).strip()
+            return clean_text
         
         action_func_key = action_data["action"]
 
@@ -123,23 +134,37 @@ class DaemonAssistant:
         while True:
             print("DEBUG: Waiting for wake word...")
             # ===== IDLE: wait for wake word =====
-            self.wake.wait()
+            wake_text = self.wake.wait()
             
             now = time.time()
             if now - self.last_wake_time < self.wake_cooldown:
                 continue
             self.last_wake_time = now
             
-            # Acknowledge wake
-            self.is_speaking = True
-            self.tts.speak(self.ack)
-            self.is_speaking = False
+            import re
+            text_l = wake_text.lower()
+            words = re.sub(r'[^\w\s]', '', text_l).split()
             
-            # Short pause to avoid speaker->mic echo
-            time.sleep(1.0)
+            prefix_words = {"hey", "hi", "hello", "he", "a", "hay", "they"}
+            wake_variants = {"daemon", "demon", "damon", "daymon", "diamond", "damen", "demons", "demon's", "timon", "demand"}
             
-            # ===== COMMAND LISTEN =====
-            text = self.stt.listen_once()
+            meaningful_words = [w for w in words if w not in prefix_words and w not in wake_variants]
+            
+            if len(meaningful_words) > 0:
+                print(f"DEBUG: Command detected in wake phrase: '{wake_text}'")
+                text = wake_text
+            else:
+                # Acknowledge wake
+                self.is_speaking = True
+                self.tts.speak(self.ack)
+                self.is_speaking = False
+                
+                # Short pause to avoid speaker->mic echo
+                time.sleep(0.2)
+                
+                # ===== COMMAND LISTEN =====
+                print("DEBUG: STT listening for command...")
+                text = self.stt.listen_once()
             
             # ❗ CRITICAL FIX: if no command, go silent and idle
             if not text or not text.strip():

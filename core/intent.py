@@ -32,7 +32,7 @@ class IntentRecognizer:
 
                 commands[intent_key] = {
                     "pattern": re.compile(pattern, re.IGNORECASE),
-                    "action": f"{intent_group.split('_')[0]}_{action}",
+                    "action": action,
                     "args": args,
                 }
         return commands

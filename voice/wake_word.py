@@ -132,13 +132,17 @@ class WakeWordListener:
         text = text.lower().strip()
         if not text:
             return False
-        if self.wake_word in text:
+            
+        import re
+        text_clean = re.sub(r'[^\w\s]', '', text)
+        
+        if self.wake_word in text_clean:
             return True
 
-        words = text.split()
+        words = text_clean.split()
         has_prefix = any(w in self.prefix_words for w in words)
         has_variant = any(v in words for v in self.wake_variants)
-        has_variant_sub = any(v in text for v in self.wake_variants)
+        has_variant_sub = any(v in text_clean for v in self.wake_variants)
 
         if has_prefix and (has_variant or has_variant_sub):
             return True
@@ -186,4 +190,4 @@ class WakeWordListener:
 
                     if self._is_wake_word(text):
                         print(f"DEBUG: ✓ Wake word DETECTED in '{text}'!")
-                        return True
+                        return text
