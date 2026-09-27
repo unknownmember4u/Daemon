@@ -136,7 +136,7 @@ class DaemonAssistant:
             self.is_speaking = False
             
             # Short pause to avoid speaker->mic echo
-            time.sleep(0.5)
+            time.sleep(1.0)
             
             # ===== COMMAND LISTEN =====
             text = self.stt.listen_once()
